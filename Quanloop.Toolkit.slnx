@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="sources/Quanloop.Toolkit.Demo/Quanloop.Toolkit.Demo.csproj" />
+  <Project Path="sources/Quanloop.Toolkit/Quanloop.Toolkit.csproj" />
+</Solution>
