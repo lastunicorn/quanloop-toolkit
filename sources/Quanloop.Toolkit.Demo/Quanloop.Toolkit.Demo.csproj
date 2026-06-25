@@ -16,4 +16,10 @@
 		<ProjectReference Include="..\Quanloop.Toolkit\Quanloop.Toolkit.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Update="statement.csv">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
 </Project>
