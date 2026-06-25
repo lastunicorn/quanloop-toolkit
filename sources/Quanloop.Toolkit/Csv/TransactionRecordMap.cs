@@ -22,7 +22,8 @@ internal sealed class TransactionRecordMap : ClassMap<TransactionRecord>
 			.Name("Description");
 
 		Map(x => x.Amount)
-			.Name("Amount");
+			.Name("Amount")
+			.Default(0m);
 
 		Map(x => x.Balance)
 			.Name("Balance");

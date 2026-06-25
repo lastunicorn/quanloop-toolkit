@@ -22,7 +22,7 @@ internal static class Program
 		}
 		catch (Exception ex)
 		{
-			await Console.Error.WriteLineAsync($"Unexpected error: {ex.Message}");
+			await Console.Error.WriteLineAsync($"Unexpected error: {ex}");
 			Environment.ExitCode = 1;
 		}
 	}
@@ -33,7 +33,12 @@ internal static class Program
 		{
 			Title = "Transactions",
 			BorderTemplate = BorderTemplate.PlusMinusBorderTemplate,
-			Footer = $"Count: {document.Count}"
+			Footer = new[]
+			{
+				$"Count: {document.Count}",
+				$"Starting Balance: {document.StartingBalance}",
+				$"Ending Balance: {document.EndingBalance}"
+			}
 		};
 
 		dataGrid.Columns.Add("Date");

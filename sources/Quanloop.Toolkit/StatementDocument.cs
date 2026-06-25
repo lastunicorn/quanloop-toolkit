@@ -13,6 +13,10 @@ namespace DustInTheWind.Quanloop.Toolkit;
 /// </remarks>
 public class StatementDocument : Collection<TransactionRecord>
 {
+	public decimal StartingBalance { get; private set; }
+
+	public decimal EndingBalance { get; private set; }
+	
 	public static async Task<StatementDocument> LoadFromFileAsync(string filePath, CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
@@ -108,10 +112,30 @@ public class StatementDocument : Collection<TransactionRecord>
 		try
 		{
 			CsvStatementDocument csvStatementDocument = new(textReader);
-			StatementDocument statementDocument = [];
+			List<TransactionRecord> records = [];
 
 			await foreach (TransactionRecord transactionRecord in csvStatementDocument.ReadTransactions(cancellationToken))
-				statementDocument.Add(transactionRecord);
+				records.Add(transactionRecord);
+
+			StatementDocument statementDocument = [];
+
+			int startIndex = 0;
+			int endIndex = records.Count - 1;
+
+			if (records.Count > 0 && records[0].Description == "Final balance")
+			{
+				statementDocument.EndingBalance = records[0].Balance;
+				startIndex = 1;
+			}
+
+			if (endIndex >= startIndex && records[endIndex].Description == "Starting balance")
+			{
+				statementDocument.StartingBalance = records[endIndex].Balance;
+				endIndex--;
+			}
+
+			for (int i = startIndex; i <= endIndex; i++)
+				statementDocument.Add(records[i]);
 
 			return statementDocument;
 		}
