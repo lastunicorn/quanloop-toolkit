@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using DustInTheWind.Quanloop.Toolkit.Csv;
 
 namespace DustInTheWind.Quanloop.Toolkit;
@@ -13,10 +13,10 @@ namespace DustInTheWind.Quanloop.Toolkit;
 /// </remarks>
 public class StatementDocument : Collection<TransactionRecord>
 {
-	public decimal StartingBalance { get; private set; }
+	public decimal StartingBalance { get; set; }
 
-	public decimal EndingBalance { get; private set; }
-	
+	public decimal EndingBalance { get; set; }
+
 	public static async Task<StatementDocument> LoadFromFileAsync(string filePath, CancellationToken cancellationToken = default)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(filePath);
@@ -112,30 +112,36 @@ public class StatementDocument : Collection<TransactionRecord>
 		try
 		{
 			CsvStatementDocument csvStatementDocument = new(textReader);
-			List<TransactionRecord> records = [];
-
-			await foreach (TransactionRecord transactionRecord in csvStatementDocument.ReadTransactions(cancellationToken))
-				records.Add(transactionRecord);
-
 			StatementDocument statementDocument = [];
+			TransactionRecord previousRecord = null;
+			bool isFirstRecord = true;
 
-			int startIndex = 0;
-			int endIndex = records.Count - 1;
-
-			if (records.Count > 0 && records[0].Description == "Final balance")
+			await foreach (TransactionRecord current in csvStatementDocument.ReadTransactions(cancellationToken))
 			{
-				statementDocument.EndingBalance = records[0].Balance;
-				startIndex = 1;
+				if (isFirstRecord)
+				{
+					isFirstRecord = false;
+
+					if (current.Description == "Final balance")
+					{
+						statementDocument.EndingBalance = current.Balance;
+						continue;
+					}
+				}
+
+				if (previousRecord != null)
+					statementDocument.Add(previousRecord);
+
+				previousRecord = current;
 			}
 
-			if (endIndex >= startIndex && records[endIndex].Description == "Starting balance")
+			if (previousRecord != null)
 			{
-				statementDocument.StartingBalance = records[endIndex].Balance;
-				endIndex--;
+				if (previousRecord.Description == "Starting balance")
+					statementDocument.StartingBalance = previousRecord.Balance;
+				else
+					statementDocument.Add(previousRecord);
 			}
-
-			for (int i = startIndex; i <= endIndex; i++)
-				statementDocument.Add(records[i]);
 
 			return statementDocument;
 		}

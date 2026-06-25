@@ -12,10 +12,10 @@ public record class TransactionRecord
 	public string Account { get; set; }
 
 	public string BicSwift { get; set; }
-	
+
 	public string Description { get; set; }
 
 	public decimal Amount { get; set; }
-	
+
 	public decimal Balance { get; set; }
 }
