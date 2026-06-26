@@ -1,9 +1,9 @@
 Quanloop Toolkit
 ================================================================================
 
-v1.1.0
+v1.0.1
 --------------------------------------------------------------------------------
-[new   ] Generate snupkg file (symbol nuget package).
+[new   ] Published a .snupkg alongside the .nupkg package.
 
 
 v1.0.0
